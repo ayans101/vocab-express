@@ -1,34 +1,31 @@
-const http = require("https");
+const fetch = require("node-fetch");
 
 module.exports.addWord = function (req, res) {
 
-    // retrieve definitions of the word
     const app_id = "471da4cc"; // insert your APP Id
     const app_key = "4db4c087f7f72c0b540c3aff448e116a"; // insert your APP Key
-    const wordId = req.body.word;
     const fields = "definitions";
     const strictMatch = "true";
+    const language = 'en-gb';
+    const word_id = req.body.word;
 
-    const options = {
-        host: 'od-api.oxforddictionaries.com',
-        port: '443',
-        path: '/api/v2/entries/en-gb/' + wordId + '?fields=' + fields + '&strictMatch=' + strictMatch,
-        method: "GET",
-        headers: {
-            'app_id': app_id,
-            'app_key': app_key
+    const url = 'https://od-api.oxforddictionaries.com:443/api/v2/entries/' + language + '/' + word_id.toLowerCase() + '?fields=' + fields + '&strictMatch=' + strictMatch;
+
+    // retrieve definitions of the word
+    (async () => {
+        try {
+          const response = await fetch(url, {
+            headers: {
+                'app_id': app_id,
+                'app_key': app_key
+            }
+          });
+          const json = await response.json();
+          console.log(json.results[0].lexicalEntries);
+        } catch (error) {
+          console.log(error);
         }
-    };
-
-    http.get(options, (resp) => {
-        let body = '';
-        resp.on('data', (d) => {
-            body += d;
-        });
-        resp.on('end', () => {
-            console.log(body);
-        });
-    });
+    })();
 
     return res.redirect("back");
 };
