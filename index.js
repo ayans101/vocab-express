@@ -2,7 +2,9 @@ const express = require('express');
 const app = express();
 const port = 1000;
 const db = require('./config/mongoose');
+const cors = require('cors');
 
+app.use(cors());    //  add CORS allow cross-origin requests from my API
 app.use(express.urlencoded({ extended: false }));
 
 //  set up the view engine
